@@ -63,6 +63,7 @@ whose size is determined when the object is allocated.
 
 #ifdef Py_TRACE_REFS
 /* Define pointers to support a doubly-linked list of all live heap objects. */
+// 开启trace_refs时，所有的object都会用ob_next与ob_prev链接彼此
 #define _PyObject_HEAD_EXTRA            \
     struct _object *_ob_next;           \
     struct _object *_ob_prev;

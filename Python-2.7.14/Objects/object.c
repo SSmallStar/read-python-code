@@ -41,7 +41,7 @@ int Py_Py3kWarningFlag;
  * together via the _ob_prev and _ob_next members of a PyObject, which
  * exist only in a Py_TRACE_REFS build.
  */
-static PyObject refchain = {&refchain, &refchain};
+static PyObject refchain = {&refchain, &refchain};  // 这种写法是列表声明，声明了含有2个指针的列表
 
 /* Insert op at the front of the list of all objects.  If force is true,
  * op is added even if _ob_prev and _ob_next are non-NULL already.  If

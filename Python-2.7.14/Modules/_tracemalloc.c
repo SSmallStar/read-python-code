@@ -93,6 +93,8 @@ __attribute__((packed))
 #elif defined(_MSC_VER)
 _declspec(align(4))
 #endif
+
+// 下面对应tracemalloc.py中的几个类声明
 {
     PyObject *filename;
     int lineno;
@@ -430,7 +432,7 @@ traceback_new(void)
     _Py_hashtable_entry_t *entry;
 
     /* get frames */
-    traceback = tracemalloc_traceback;
+    traceback = tracemalloc_traceback; // 这里先用一个全局的max_frame_size的全局traceback来存，避免每次分配
     traceback->nframe = 0;
     traceback_get_frames(traceback);
     if (traceback->nframe == 0)
@@ -446,7 +448,7 @@ traceback_new(void)
         traceback_t *copy;
         size_t traceback_size;
 
-        traceback_size = TRACEBACK_SIZE(traceback->nframe);
+        traceback_size = TRACEBACK_SIZE(traceback->nframe);  // 等拿到栈了之后可以确定size了再分配实际大小内存
 
         copy = raw_malloc(traceback_size);
         if (copy == NULL) {
@@ -470,13 +472,13 @@ traceback_new(void)
 }
 
 static int
-tracemalloc_add_trace(void *ptr, size_t size)
+tracemalloc_add_trace(void *ptr, size_t size) // 分配完内存后，记录分配栈信息/size，以及分配到了哪个指针
 {
     traceback_t *traceback;
     trace_t trace;
     int res;
 
-    traceback = traceback_new();
+    traceback = traceback_new();  //记录函数
     if (traceback == NULL)
         return -1;
 
@@ -928,7 +930,7 @@ tracemalloc_start(int max_nframe)
     }
 
 #ifdef TRACE_RAW_MALLOC
-    alloc.malloc = tracemalloc_raw_malloc;
+    alloc.malloc = tracemalloc_raw_malloc; // 在这里替换了内存分配函数
     alloc.realloc = tracemalloc_raw_realloc;
     alloc.free = tracemalloc_free;
 
